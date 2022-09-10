@@ -28,17 +28,6 @@ float barcolor(vec2 st, float bar_top, float bar_bottom, float bar_right, float 
 	return step(bar_bottom, st.y) * step(1 - bar_top, 1-st.y) * step(bar_left, st.x) * step(1 - bar_right, 1-st.x);
 }
 
-/*
-float coloring(vec2 st, vec3 coloring, float coloring_top, float coloring_bottom, float coloring_right, float coloring_left){
-	vec3 outputcolor = vec3(0.0);
-	float iro = step(coloring_bottom, st.y) * step(1-coloring_top, 1-st.y) * step(coloring_left, st.x) * step(1-coloring_right, 1-st.x);
-	vec3 iro_vec = vec3(iro); 
-	outputcolor = vec3(coloring.x + iro.x, coloring.y + iro.y, coloring.z + iro.z);
-	
-	return outputcolor;
-}
-*/
-
 void main(){
 	//座標を x : -1 - 1 y : -1 - 1に正規化
     vec2 st = (gl_FragCoord.xy * 2.0 - resolution) / min(resolution.x, resolution.y) / zoom;
@@ -56,6 +45,7 @@ void main(){
     vec3 blue = vec3(0.076, 0.249, 0.465);
     vec3 yellow = vec3(0.765, 0.692, 0.037);
 
+//背景色
     float left = step(-0.8,st.x);
     float bottom = step(-1,st.y);
 
@@ -66,27 +56,27 @@ void main(){
     float pct = left * bottom* right * top;
 
     //枠線
-	pct *= bar_h(st, 0.65, 0.6) * bar_h(st, 0.2, 0.15) * bar_v(st, 0.4, 0.36) * bar_v(st, 0.75, 0.71) * bar_v(st, -0.36, -0.4) * bar(st, 1.0,0.15,-0.58,-0.62) * bar(st, -0.75,-0.8,1,-0.4);
+	pct *= bar_h(st, 0.725 + 0.2 * sin(time * 0.9), 0.675 + 0.2 * sin(time * 0.9)) * bar_h(st, 0.2, 0.15) * bar_v(st, 0.4, 0.36) * bar_v(st, 0.75, 0.71) * bar_v(st, -0.18 + 0.2 * sin(time), -0.22 + 0.2 * sin(time)) * bar(st, 1.0,0.15,-0.58,-0.62) * bar(st, -0.425 + 0.45 * sin(0.7*time),-0.475 + 0.45 * sin(0.7*time),1,-0.22 + 0.2 * sin(time));
 
 	//塗りつぶし準備　黒(0)にする scarlet
- 	pct *= bar(st, 1, 0.65, -0.62, -0.8) * bar(st, 1, 0.65, -0.4, -0.58) * bar(st, 0.6, 0.2, -0.62, -0.8) * bar(st, 0.6, 0.2, -0.4, -0.58);
+ 	pct *= bar(st, 1, 0.725 + 0.2 * sin(time * 0.9), -0.62, -0.8) * bar(st, 1, 0.725 + 0.2 * sin(time * 0.9), -0.22 + 0.2 * sin(time), -0.58) * bar(st, 0.675 + 0.2 * sin(time * 0.9), 0.2, -0.62, -0.8) * bar(st, 0.675 + 0.2 * sin(time * 0.9), 0.2, -0.22 + 0.2 * sin(time), -0.58);
 
  	//scarlet色付け
-	coloring_scarlet = vec3(barcolor(st, 1, 0.65, -0.62, -0.8) + barcolor(st, 1, 0.65, -0.4, -0.58) + barcolor(st, 0.6, 0.2, -0.62, -0.8) + barcolor(st, 0.6, 0.2, -0.4, -0.58));
+	coloring_scarlet = vec3(barcolor(st, 1, 0.725 + 0.2 * sin(time * 0.9), -0.62, -0.8) + barcolor(st, 1, 0.725 + 0.2 * sin(time * 0.9), -0.22 + 0.2 * sin(time), -0.58) + barcolor(st, 0.675 + 0.2 * sin( time * 0.9), 0.2, -0.62, -0.8) + barcolor(st, 0.675 + 0.2 * sin(time * 0.9), 0.2, -0.22 + 0.2 * sin(time), -0.58));
 	paint_scarlet = vec3(scarlet.x * coloring_scarlet.x, scarlet.y * coloring_scarlet.y, scarlet.z * coloring_scarlet.z);
 
 	//塗りつぶし準備　黒(0)にする blue
- 	pct *= bar(st, -0.8, -1, 0.71, 0.4) * bar(st, -0.8, -1, 0.8, 0.75);
+ 	pct *= bar(st, -0.475 + 0.45 * sin(0.7*time), -1, 0.71, 0.4) * bar(st, -0.475 + 0.45 * sin(0.7*time), -1, 0.8, 0.75);
 
- 	//bluet色付け
-	coloring_blue = vec3(barcolor(st, -0.8, -1, 0.71, 0.4) + barcolor(st, -0.8, -1, 0.8, 0.75));
+ 	//blue色付け
+	coloring_blue = vec3(barcolor(st, -0.475 + 0.45 * sin(0.7*time), -1, 0.71, 0.4) + barcolor(st, -0.475 + 0.45 * sin(0.7*time), -1, 0.8, 0.75));
 	paint_blue = vec3(blue.x * coloring_blue.x, blue.y * coloring_blue.y, blue.z * coloring_blue.z);
 
 	//塗りつぶし準備　黒(0)にする yellow
- 	pct *= bar(st, 1, 0.65, 0.8, 0.75) * bar(st, 0.6, 0.2, 0.8, 0.75);
+ 	pct *= bar(st, 1, 0.725 + 0.2 * sin(time * 0.9), 0.8, 0.75) * bar(st, 0.675 + 0.2 * sin(time * 0.9), 0.2, 0.8, 0.75);
 
  	//yellow色付け
-	coloring_yellow = vec3(barcolor(st, 1, 0.65, 0.8, 0.75) + barcolor(st, 0.6, 0.2, 0.8, 0.75));
+	coloring_yellow = vec3(barcolor(st, 1, 0.725 + 0.2 * sin(time * 0.9), 0.8, 0.75) + barcolor(st, 0.675 + 0.2 * sin(time * 0.9), 0.2, 0.8, 0.75));
 	paint_yellow = vec3(yellow.x * coloring_yellow.x, yellow.y * coloring_yellow.y, yellow.z * coloring_yellow.z);
 
 	vec3 skin_color = vec3(0.98, 0.96, 0.9);
