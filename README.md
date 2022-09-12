@@ -1,2 +1,0 @@
-# Mondria
-Mondria- Generatica Coding
